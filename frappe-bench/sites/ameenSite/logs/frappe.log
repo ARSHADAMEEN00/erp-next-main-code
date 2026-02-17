@@ -1,0 +1,15 @@
+2026-02-10 11:10:28,529 ERROR frappe New Exception collected in error log
+Site: ameenSite
+Form Dict: {'doc': '{"docstatus":0,"doctype":"Client Document","name":"new-client-document-zdaitqxjkp","__islocal":1,"__unsaved":1,"owner":"Administrator","status":"active","client_name":"Ameen Arshad Nediya","company_name":"Osperb innovations","client_phone":"8606509495","address":"3rd floor, Daliya Mall, 966, National Highway, Up Hill, Malappuram, Kerala 676505","place":"Malappuram"}', 'action': 'Save', 'cmd': 'frappe.desk.form.save.savedocs'}
+2026-02-10 11:11:45,484 ERROR frappe New Exception collected in error log
+Site: ameenSite
+Form Dict: {'doctype': 'Client Document', 'name': 'new-client-document-zdaitqxjkp', 'cmd': 'frappe.desk.form.load.getdoc'}
+2026-02-10 11:11:49,038 ERROR frappe New Exception collected in error log
+Site: ameenSite
+Form Dict: {'doctype': 'Client Document', 'name': 'new-client-document-zdaitqxjkp', 'cmd': 'frappe.desk.form.load.getdoc'}
+2026-02-10 11:12:33,866 ERROR frappe New Exception collected in error log
+Site: ameenSite
+Form Dict: {'doc': '{"docstatus":0,"doctype":"Client Document","name":"new-client-document-hhxwgngwnr","__islocal":1,"__unsaved":1,"owner":"Administrator","status":"active","address":"3rd floor, Daliya Mall, 966, National Highway, Up Hill, Malappuram, Kerala 676505","client_name":"Ameen arshad nediya","company_name":"osperb","client_phone":"1234567890","place":"mpm","old_parent":"","is_group":0}', 'action': 'Save', 'cmd': 'frappe.desk.form.save.savedocs'}
+2026-02-11 11:47:36,810 ERROR frappe New Exception collected in error log
+Site: ameenSite
+Form Dict: {'doctype': 'Services Registration', 'with_parent': '1', 'cached_timestamp': '2026-02-11 10:58:30.595343', 'cmd': 'frappe.desk.form.load.getdoctype'}

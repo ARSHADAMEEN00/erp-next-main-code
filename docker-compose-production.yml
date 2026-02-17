@@ -1,0 +1,164 @@
+version: "3.8"
+
+services:
+  # MariaDB Database (Containerized)
+  db:
+    image: mariadb:10.6
+    container_name: erpnext_db
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake --innodb-file-per-table --innodb-large-prefix --transaction-isolation=READ-COMMITTED
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin123}
+      MYSQL_DATABASE: ${DB_NAME:-ameen_site}
+      MYSQL_USER: ${DB_USER:-ameen_site}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-admin123}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - erpnext_network
+    ports:
+      - "3306:3306"
+
+  # Redis Cache
+  redis-cache:
+    image: redis:7-alpine
+    container_name: erpnext_redis_cache
+    restart: unless-stopped
+    networks:
+      - erpnext_network
+    volumes:
+      - redis_cache_data:/data
+
+  # Redis Queue
+  redis-queue:
+    image: redis:7-alpine
+    container_name: erpnext_redis_queue
+    restart: unless-stopped
+    networks:
+      - erpnext_network
+    volumes:
+      - redis_queue_data:/data
+
+  # ERPNext Backend (Build from Dockerfile)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: erpnext_backend
+    restart: unless-stopped
+    environment:
+      # Database Configuration
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-ameen_site}
+      DB_USER: ${DB_USER:-ameen_site}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+
+      # Redis Configuration
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+
+      # Site Configuration
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+
+      # Production Mode
+      DEVELOPER_MODE: 0
+
+    volumes:
+      - sites_data:/home/frappe/frappe-bench/sites
+      - logs_data:/home/frappe/frappe-bench/logs
+      - ./ameen_site_ready_dump.sql:/home/frappe/frappe-bench/dump.sql:ro
+      - ./docker-entrypoint.sh:/docker-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/docker-entrypoint.sh"]
+    networks:
+      - erpnext_network
+    depends_on:
+      db:
+        condition: service_started
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+    ports:
+      - "8000:8000"
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: erpnext_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - sites_data:/home/frappe/frappe-bench/sites:ro
+    networks:
+      - erpnext_network
+    depends_on:
+      - backend
+
+  # Background Worker
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: erpnext_worker
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-ameen_site}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+    volumes:
+      - sites_data:/home/frappe/frappe-bench/sites
+      - logs_data:/home/frappe/frappe-bench/logs
+    networks:
+      - erpnext_network
+    depends_on:
+      - backend
+    command: bench worker --queue default,long,short
+
+  # Scheduler
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: erpnext_scheduler
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-ameen_site}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+    volumes:
+      - sites_data:/home/frappe/frappe-bench/sites
+      - logs_data:/home/frappe/frappe-bench/logs
+    networks:
+      - erpnext_network
+    depends_on:
+      - backend
+    command: bench schedule
+
+volumes:
+  db_data:
+    driver: local
+  redis_cache_data:
+    driver: local
+  redis_queue_data:
+    driver: local
+  sites_data:
+    driver: local
+  logs_data:
+    driver: local
+
+networks:
+  erpnext_network:
+    driver: bridge

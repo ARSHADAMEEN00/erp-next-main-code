@@ -1,0 +1,31 @@
+{
+    "frappe": {
+        "resolution": {
+            "commit_hash": null,
+            "branch": null
+        },
+        "required": [],
+        "idx": 1,
+        "version": "15.99.0"
+    },
+    "erpnext": {
+        "is_repo": true,
+        "resolution": {
+            "commit_hash": "9c2b4f611d642c4fd65eaad77bc98d611eed8e93",
+            "branch": "version-15"
+        },
+        "required": [],
+        "idx": 2,
+        "version": "15.96.1"
+    },
+    "ameen_app": {
+        "is_repo": true,
+        "resolution": {
+            "commit_hash": "751ef2b7c457a3fc13de25647b606a4423bbba5c",
+            "branch": "develop"
+        },
+        "required": [],
+        "idx": 3,
+        "version": "0.0.1"
+    }
+}

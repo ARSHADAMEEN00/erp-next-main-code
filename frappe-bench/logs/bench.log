@@ -1,0 +1,145 @@
+2026-02-10 09:25:10,399 DEBUG cd frappe-bench && uv venv env --seed --python /opt/homebrew/opt/python@3.11/bin/python3.11
+2026-02-10 09:25:11,346 LOG Getting frappe
+2026-02-10 09:25:11,347 DEBUG cd frappe-bench/apps && git clone https://github.com/frappe/frappe.git --branch version-15 --depth 1 --origin upstream
+2026-02-10 09:25:23,609 LOG Installing frappe
+2026-02-10 09:25:23,610 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/frappe  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python
+2026-02-10 09:26:03,750 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/frappe && yarn install --check-files
+2026-02-10 09:26:10,642 DEBUG cd frappe-bench && bench build
+2026-02-10 09:26:10,748 INFO /opt/homebrew/bin/bench build
+2026-02-10 09:26:21,891 LOG setting up backups
+2026-02-10 09:26:21,940 LOG backups were set up
+2026-02-10 09:26:21,940 INFO Bench frappe-bench initialized
+2026-02-10 09:30:27,343 INFO /opt/homebrew/bin/bench new-site decode.com
+2026-02-10 09:31:13,958 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:32:39,277 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:34:50,538 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:35:11,100 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:39:14,871 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:39:32,484 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:44:09,359 INFO /opt/homebrew/bin/bench new-site ameenSite
+2026-02-10 09:44:52,866 INFO /opt/homebrew/bin/bench start
+2026-02-10 09:44:53,794 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 09:44:53,794 INFO /opt/homebrew/bin/bench watch
+2026-02-10 09:44:53,800 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 09:44:53,801 INFO /opt/homebrew/bin/bench worker
+2026-02-10 09:46:36,621 INFO /opt/homebrew/bin/bench get-app erpnext
+2026-02-10 09:46:37,290 LOG Getting erpnext
+2026-02-10 09:46:37,290 DEBUG cd ./apps && git clone https://github.com/frappe/erpnext.git  --depth 1 --origin upstream
+2026-02-10 09:46:43,166 LOG Installing erpnext
+2026-02-10 09:46:43,166 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/erpnext  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python
+2026-02-10 09:46:43,624 WARNING cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/erpnext  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python executed with exit code 1
+2026-02-10 09:46:43,625 WARNING /opt/homebrew/bin/bench get-app erpnext executed with exit code 167
+2026-02-10 09:47:35,467 INFO /opt/homebrew/bin/bench get-app --branch version-15 erpnext
+2026-02-10 09:47:42,802 INFO App moved from apps/erpnext to archived/apps/erpnext-2026-02-10
+2026-02-10 09:47:42,812 LOG Getting erpnext
+2026-02-10 09:47:42,812 DEBUG cd ./apps && git clone https://github.com/frappe/erpnext.git --branch version-15 --depth 1 --origin upstream
+2026-02-10 09:47:52,436 LOG Installing erpnext
+2026-02-10 09:47:52,436 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/erpnext  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python
+2026-02-10 09:47:58,957 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/erpnext && yarn install --check-files
+2026-02-10 09:47:59,219 DEBUG bench build --app erpnext
+2026-02-10 09:47:59,312 INFO /opt/homebrew/bin/bench build --app erpnext
+2026-02-10 09:49:06,357 INFO /opt/homebrew/bin/bench --site ameenSite install-app erpnext
+2026-02-10 09:49:33,270 INFO /opt/homebrew/bin/bench new-site ameenSite --force
+2026-02-10 09:50:20,792 INFO /opt/homebrew/bin/bench new-site ameenSite --force
+2026-02-10 09:51:42,383 INFO /opt/homebrew/bin/bench get-app --branch version-15 erpnext
+2026-02-10 09:51:46,506 INFO App moved from apps/erpnext to archived/apps/erpnext-2026-02-10_1
+2026-02-10 09:51:46,530 LOG Getting erpnext
+2026-02-10 09:51:46,530 DEBUG cd ./apps && git clone https://github.com/frappe/erpnext.git --branch version-15 --depth 1 --origin upstream
+2026-02-10 09:51:55,680 LOG Installing erpnext
+2026-02-10 09:51:55,680 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/erpnext  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python
+2026-02-10 09:51:56,278 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/erpnext && yarn install --check-files
+2026-02-10 09:51:56,539 DEBUG bench build --app erpnext
+2026-02-10 09:51:56,627 INFO /opt/homebrew/bin/bench build --app erpnext
+2026-02-10 09:52:45,871 INFO /opt/homebrew/bin/bench --site ameenSite install-app version-15 erpnext
+2026-02-10 09:55:30,096 INFO /opt/homebrew/bin/bench start
+2026-02-10 09:55:30,321 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 09:55:30,323 INFO /opt/homebrew/bin/bench worker
+2026-02-10 09:55:30,323 INFO /opt/homebrew/bin/bench watch
+2026-02-10 09:55:30,324 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 09:56:22,374 INFO /opt/homebrew/bin/bench start
+2026-02-10 09:56:22,578 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 09:56:22,584 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 09:56:22,591 INFO /opt/homebrew/bin/bench worker
+2026-02-10 09:56:22,592 INFO /opt/homebrew/bin/bench watch
+2026-02-10 09:57:27,862 INFO /opt/homebrew/bin/bench get-sites
+2026-02-10 09:57:56,512 INFO /opt/homebrew/bin/bench use ameenSite
+2026-02-10 09:58:09,565 INFO /opt/homebrew/bin/bench --site ameenSite list-apps
+2026-02-10 09:58:23,593 INFO /opt/homebrew/bin/bench start
+2026-02-10 09:58:41,611 INFO /opt/homebrew/bin/bench start
+2026-02-10 09:58:41,813 INFO /opt/homebrew/bin/bench watch
+2026-02-10 09:58:41,816 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 09:58:41,825 INFO /opt/homebrew/bin/bench worker
+2026-02-10 09:58:41,825 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 10:04:37,510 INFO /opt/homebrew/bin/bench set-config developer_mode 1
+2026-02-10 10:05:31,095 INFO /opt/homebrew/bin/bench start
+2026-02-10 10:05:31,306 INFO /opt/homebrew/bin/bench watch
+2026-02-10 10:05:31,312 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 10:05:31,314 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 10:05:31,321 INFO /opt/homebrew/bin/bench worker
+2026-02-10 10:06:58,021 INFO /opt/homebrew/bin/bench new-app ameen-app
+2026-02-10 10:06:58,024 LOG creating new app ameen_app
+2026-02-10 10:08:05,537 LOG Installing ameen_app
+2026-02-10 10:08:05,539 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/ameen_app  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python
+2026-02-10 10:08:05,965 DEBUG bench build --app ameen_app
+2026-02-10 10:08:06,053 INFO /opt/homebrew/bin/bench build --app ameen_app
+2026-02-10 10:09:33,019 INFO /opt/homebrew/bin/bench start
+2026-02-10 10:09:33,237 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 10:09:33,246 INFO /opt/homebrew/bin/bench worker
+2026-02-10 10:09:33,248 INFO /opt/homebrew/bin/bench watch
+2026-02-10 10:09:33,248 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 10:11:23,142 INFO /opt/homebrew/bin/bench install-app ameen_app
+2026-02-10 10:11:34,394 INFO /opt/homebrew/bin/bench start
+2026-02-10 10:11:34,605 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 10:11:34,609 INFO /opt/homebrew/bin/bench watch
+2026-02-10 10:11:34,610 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 10:11:34,611 INFO /opt/homebrew/bin/bench worker
+2026-02-10 10:47:39,743 INFO /opt/homebrew/bin/bench mariadb
+2026-02-10 12:00:01,486 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-10 16:08:39,011 INFO /opt/homebrew/bin/bench start
+2026-02-10 16:08:39,223 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-10 16:08:39,225 INFO /opt/homebrew/bin/bench watch
+2026-02-10 16:08:39,227 INFO /opt/homebrew/bin/bench schedule
+2026-02-10 16:08:39,235 INFO /opt/homebrew/bin/bench worker
+2026-02-11 06:06:28,375 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-11 09:28:23,825 INFO /opt/homebrew/bin/bench start
+2026-02-11 09:28:40,701 INFO /opt/homebrew/bin/bench start
+2026-02-11 09:30:38,968 INFO /opt/homebrew/bin/bench start
+2026-02-11 09:30:39,160 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-11 09:30:39,165 INFO /opt/homebrew/bin/bench watch
+2026-02-11 09:30:39,173 INFO /opt/homebrew/bin/bench schedule
+2026-02-11 09:30:39,176 INFO /opt/homebrew/bin/bench worker
+2026-02-11 09:43:28,322 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 09:45:34,100 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 09:48:17,467 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 09:53:47,687 INFO /opt/homebrew/bin/bench --site ameenSite execute frappe.delete_doc --args ['Workspace', 'Ameen App']
+2026-02-11 09:54:47,280 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 09:55:05,866 INFO /opt/homebrew/bin/bench start
+2026-02-11 09:55:06,067 INFO /opt/homebrew/bin/bench watch
+2026-02-11 09:55:06,074 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-11 09:55:06,077 INFO /opt/homebrew/bin/bench schedule
+2026-02-11 09:55:06,086 INFO /opt/homebrew/bin/bench worker
+2026-02-11 09:59:24,960 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 10:04:24,453 INFO /opt/homebrew/bin/bench --site ameenSite clear-cache
+2026-02-11 10:04:50,909 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 10:05:35,952 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 10:11:00,338 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 10:14:59,342 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-11 12:00:01,394 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-11 12:11:15,302 INFO /opt/homebrew/bin/bench --site ameenSite clear-cache
+2026-02-11 18:00:01,118 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-12 12:00:00,788 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-13 12:00:02,016 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-14 12:00:01,551 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-15 12:00:01,725 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-16 11:52:10,506 INFO /opt/homebrew/bin/bench start
+2026-02-16 11:52:11,023 INFO /opt/homebrew/bin/bench schedule
+2026-02-16 11:52:11,025 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-16 11:52:11,025 INFO /opt/homebrew/bin/bench worker
+2026-02-16 11:52:11,028 INFO /opt/homebrew/bin/bench watch
+2026-02-16 11:52:18,438 INFO /opt/homebrew/bin/bench mariadb
+2026-02-16 12:00:00,598 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-17 09:23:38,572 INFO /opt/homebrew/bin/bench --site ameenSite mariadb -e SELECT DATABASE();
+2026-02-17 09:24:11,635 INFO /opt/homebrew/bin/bench --site ameenSite execute frappe.db.sql --args SELECT DATABASE()
+2026-02-17 09:24:52,099 INFO /opt/homebrew/bin/bench --site ameenSite execute frappe.db.sql --args ('SELECT DATABASE()',)
+2026-02-17 09:26:00,687 INFO /opt/homebrew/bin/bench --site ameenSite execute frappe.db.sql --args ('SELECT DATABASE()',)
+2026-02-17 12:00:01,398 INFO /opt/homebrew/bin/bench --verbose --site all backup
