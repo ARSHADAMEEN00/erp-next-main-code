@@ -16,6 +16,12 @@ services:
       - erpnext_network
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin123"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
 
   # Redis Cache
   redis-cache:
@@ -26,6 +32,11 @@ services:
       - erpnext_network
     volumes:
       - redis_cache_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # Redis Queue
   redis-queue:
@@ -38,9 +49,15 @@ services:
       - redis_queue_data:/data
     ports:
       - "11311:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # ERPNext Backend (Build from fixed Dockerfile)
   backend:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
@@ -53,6 +70,7 @@ services:
       DB_NAME: ${DB_NAME:-ameen_site}
       DB_USER: ${DB_USER:-ameen_site}
       DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin123}
 
       # Redis Configuration
       REDIS_CACHE: redis-cache:6379
@@ -69,15 +87,17 @@ services:
       - sites_data:/home/frappe/frappe-bench/sites
       - logs_data:/home/frappe/frappe-bench/logs
       - ./ameen_site_ready_dump.sql:/home/frappe/frappe-bench/dump.sql:ro
+      - ./docker-entrypoint.sh:/docker-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/docker-entrypoint.sh"]
     networks:
       - erpnext_network
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
       redis-cache:
-        condition: service_started
+        condition: service_healthy
       redis-queue:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "8000:8000"
 
@@ -96,6 +116,56 @@ services:
       - erpnext_network
     depends_on:
       - backend
+
+  # Background Worker
+  worker:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: erpnext_worker
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-ameen_site}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+    volumes:
+      - sites_data:/home/frappe/frappe-bench/sites
+      - logs_data:/home/frappe/frappe-bench/logs
+    networks:
+      - erpnext_network
+    depends_on:
+      - backend
+    command: bench worker --queue default,long,short
+
+  # Scheduler
+  scheduler:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: erpnext_scheduler
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-ameen_site}
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+    volumes:
+      - sites_data:/home/frappe/frappe-bench/sites
+      - logs_data:/home/frappe/frappe-bench/logs
+    networks:
+      - erpnext_network
+    depends_on:
+      - backend
+    command: bench schedule
 
 volumes:
   db_data:

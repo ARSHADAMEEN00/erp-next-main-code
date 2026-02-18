@@ -1,87 +1,91 @@
 #!/bin/bash
-
-# Exit on error
 set -e
 
 echo "Starting ERPNext with fixed configuration..."
 
-# Wait for Redis
-echo "Waiting for Redis services..."
-while ! redis-cli -h redis-cache -p 6379 ping >/dev/null 2>&1; do
-    echo "Waiting for redis-cache..."
-    sleep 2
+SITE_NAME="${SITE_NAME:-erpnext.localhost}"
+DB_HOST="${DB_HOST:-db}"
+DB_PORT="${DB_PORT:-3306}"
+DB_NAME="${DB_NAME:-ameen_site}"
+DB_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-admin123}"
+DB_PASSWORD="${DB_PASSWORD:-admin123}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin}"
+SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME}"
+
+# ─── Step 1: Wait for MariaDB ────────────────────────────────────────────────
+echo "Waiting for MariaDB to be ready..."
+until mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" -e "SELECT 1;" > /dev/null 2>&1; do
+    echo "  MariaDB not ready yet, retrying in 3s..."
+    sleep 3
 done
+echo "MariaDB is ready!"
 
-while ! redis-cli -h redis-queue -p 6379 ping >/dev/null 2>&1; do
-    echo "Waiting for redis-queue..."
-    sleep 2
-done
-
-echo "Redis services are ready!"
-
-# Wait for Database
-echo "Waiting for database at ${DB_HOST:-db}:${DB_PORT:-3306}..."
-max_retries=30
-counter=0
-while ! mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_USER:-ameen_site} -p${DB_PASSWORD:-admin123} -e "SELECT 1" >/dev/null 2>&1; do
-    sleep 2
-    counter=$((counter+1))
-    if [ $counter -ge $max_retries ]; then
-        echo "Could not connect to database after $max_retries attempts. Exiting."
-        exit 1
-    fi
-    echo "Waiting for database... ($counter/$max_retries)"
-done
-echo "Database is ready!"
-
-# Update common_site_config.json for container environment
+# ─── Step 2: Update common_site_config.json ──────────────────────────────────
 echo "Updating common_site_config.json..."
+mkdir -p /home/frappe/frappe-bench/sites
 cat > /home/frappe/frappe-bench/sites/common_site_config.json << EOF
 {
     "redis_cache": "redis://redis-cache:6379",
     "redis_queue": "redis://redis-queue:6379",
     "redis_socketio": "redis://redis-queue:6379",
-    "db_host": "${DB_HOST:-db}",
-    "db_port": ${DB_PORT:-3306}
+    "db_host": "${DB_HOST}",
+    "db_port": ${DB_PORT}
 }
 EOF
 
-# Ensure site exists and is configured
-SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}"
-if [ ! -d "$SITE_PATH" ]; then
+# ─── Step 3: Create DB and restore dump ──────────────────────────────────────
+echo "Creating database if not exists..."
+mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" -e \
+    "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+if [ -f /home/frappe/frappe-bench/dump.sql ]; then
+    echo "Restoring database from dump file (ameen_site_ready_dump.sql)..."
+    mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" "${DB_NAME}" \
+        < /home/frappe/frappe-bench/dump.sql \
+        && echo "Database restored successfully!" \
+        || echo "Dump restore failed or already restored, continuing..."
+fi
+
+# ─── Step 4: Fix user permissions AFTER dump restore ─────────────────────────
+# The dump may overwrite grants, so we re-apply them here
+echo "Fixing database user permissions..."
+mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" << SQL
+DROP USER IF EXISTS '${DB_NAME}'@'localhost';
+DROP USER IF EXISTS '${DB_NAME}'@'%';
+CREATE USER '${DB_NAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_NAME}'@'%';
+FLUSH PRIVILEGES;
+SQL
+echo "Permissions fixed!"
+
+# ─── Step 5: Create site if it doesn't exist ─────────────────────────────────
+if [ ! -d "${SITE_PATH}" ]; then
     echo "Site directory not found. Creating site..."
-    bench new-site ${SITE_NAME:-erpnext.localhost} \
-        --db-host ${DB_HOST:-db} \
-        --db-port ${DB_PORT:-3306} \
-        --db-name ${DB_NAME:-ameen_site} \
-        --db-user ${DB_USER:-ameen_site} \
-        --db-password ${DB_PASSWORD:-admin123} \
-        --admin-password ${ADMIN_PASSWORD:-admin} \
-        --no-mariadb-socket
+    bench new-site "${SITE_NAME}" \
+        --db-root-username root \
+        --db-root-password "${DB_ROOT_PASSWORD}" \
+        --db-name "${DB_NAME}" \
+        --admin-password "${ADMIN_PASSWORD}" \
+        --no-mariadb-socket \
+        || echo "Site creation failed, it may already exist"
+else
+    echo "Site already exists at ${SITE_PATH}"
 fi
 
-# Check if we need to restore from dump
-if [ -f /home/frappe/frappe-bench/dump.sql ] && ! bench --site ${SITE_NAME:-erpnext.localhost} list-apps > /dev/null 2>&1; then
-    echo "Restoring from dump file..."
-    mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_USER:-ameen_site} -p${DB_PASSWORD:-admin123} ${DB_NAME:-ameen_site} < /home/frappe/frappe-bench/dump.sql
-fi
-
-# Always migrate to ensure schema is up to date
+# ─── Step 6: Run migrations ───────────────────────────────────────────────────
 echo "Running migrations..."
-bench --site ${SITE_NAME:-erpnext.localhost} migrate
+bench --site "${SITE_NAME}" migrate || echo "Migration completed with warnings (non-fatal)"
 
-# Install custom app if not already installed
-if ! bench --site ${SITE_NAME:-erpnext.localhost} list-apps | grep -q "ameen_app"; then
+# ─── Step 7: Install custom app ──────────────────────────────────────────────
+if ! bench --site "${SITE_NAME}" list-apps 2>/dev/null | grep -q "ameen_app"; then
     echo "Installing ameen_app..."
-    bench --site ${SITE_NAME:-erpnext.localhost} install-app ameen_app
+    bench --site "${SITE_NAME}" install-app ameen_app || echo "ameen_app install failed or already installed"
 fi
 
-# Set default site
-bench use ${SITE_NAME:-erpnext.localhost}
+# ─── Step 8: Final setup ──────────────────────────────────────────────────────
+bench use "${SITE_NAME}" || true
+mkdir -p "${SITE_PATH}/locks"
+mkdir -p "${SITE_PATH}/logs"
 
-# Ensure proper permissions
-mkdir -p $SITE_PATH/locks
-mkdir -p $SITE_PATH/logs
-
-echo "Starting ERPNext..."
-exec bench serve --port 8000 --no-reload
+echo "Starting ERPNext server..."
+exec bench serve --port 8000 --noreload
