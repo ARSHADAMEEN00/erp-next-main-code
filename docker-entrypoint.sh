@@ -1,13 +1,29 @@
 #!/bin/bash
 
 # Exit on error
-# set -e
+set -e
 
-# Helper to wait for DB
+echo "Starting ERPNext with fixed configuration..."
+
+# Wait for Redis
+echo "Waiting for Redis services..."
+while ! redis-cli -h redis-cache -p 6379 ping >/dev/null 2>&1; do
+    echo "Waiting for redis-cache..."
+    sleep 2
+done
+
+while ! redis-cli -h redis-queue -p 6379 ping >/dev/null 2>&1; do
+    echo "Waiting for redis-queue..."
+    sleep 2
+done
+
+echo "Redis services are ready!"
+
+# Wait for Database
 echo "Waiting for database at ${DB_HOST:-db}:${DB_PORT:-3306}..."
 max_retries=30
 counter=0
-while ! mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_NAME:-ameen_site} -p${DB_PASSWORD:-admin123} -e "SELECT 1" >/dev/null 2>&1; do
+while ! mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_USER:-ameen_site} -p${DB_PASSWORD:-admin123} -e "SELECT 1" >/dev/null 2>&1; do
     sleep 2
     counter=$((counter+1))
     if [ $counter -ge $max_retries ]; then
@@ -18,64 +34,54 @@ while ! mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_NAME:-ameen_site} -p
 done
 echo "Database is ready!"
 
-# FIX: Explicitly create/update common_site_config.json for Redis
-if [ ! -f /home/frappe/frappe-bench/sites/common_site_config.json ]; then
-  echo 'Creating common_site_config.json...'
-  echo "{
-    \"redis_cache\": \"redis://redis-cache:6379\",
-    \"redis_queue\": \"redis://redis-queue:6379\", 
-    \"redis_socketio\": \"redis://redis-queue:6379\",
-    \"db_host\": \"${DB_HOST:-db}\",
-    \"db_port\": ${DB_PORT:-3306}
-  }" > /home/frappe/frappe-bench/sites/common_site_config.json
-else
-   echo 'Updating common_site_config.json...'
-   echo "{
-    \"redis_cache\": \"redis://redis-cache:6379\",
-    \"redis_queue\": \"redis://redis-queue:6379\",
-    \"redis_socketio\": \"redis://redis-queue:6379\",
-    \"db_host\": \"${DB_HOST:-db}\",
-    \"db_port\": ${DB_PORT:-3306}
-   }" > /home/frappe/frappe-bench/sites/common_site_config.json
+# Update common_site_config.json for container environment
+echo "Updating common_site_config.json..."
+cat > /home/frappe/frappe-bench/sites/common_site_config.json << EOF
+{
+    "redis_cache": "redis://redis-cache:6379",
+    "redis_queue": "redis://redis-queue:6379",
+    "redis_socketio": "redis://redis-queue:6379",
+    "db_host": "${DB_HOST:-db}",
+    "db_port": ${DB_PORT:-3306}
+}
+EOF
+
+# Ensure site exists and is configured
+SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}"
+if [ ! -d "$SITE_PATH" ]; then
+    echo "Site directory not found. Creating site..."
+    bench new-site ${SITE_NAME:-erpnext.localhost} \
+        --db-host ${DB_HOST:-db} \
+        --db-port ${DB_PORT:-3306} \
+        --db-name ${DB_NAME:-ameen_site} \
+        --db-user ${DB_USER:-ameen_site} \
+        --db-password ${DB_PASSWORD:-admin123} \
+        --admin-password ${ADMIN_PASSWORD:-admin} \
+        --no-mariadb-socket
 fi
 
-# Ensure locks and logs directories exist
-mkdir -p /home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}/locks
-mkdir -p /home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}/logs
-
-if [ ! -f /home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}/site_config.json ]; then
-  echo 'Creating site config to connect to existing DB...';
-  mkdir -p /home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}
-  
-  echo "{
-   \"db_name\": \"${DB_NAME:-ameen_site}\",
-   \"db_password\": \"${DB_PASSWORD:-admin123}\",
-   \"developer_mode\": ${DEVELOPER_MODE:-1},
-   \"admin_password\": \"${ADMIN_PASSWORD:-admin}\"
-  }" > /home/frappe/frappe-bench/sites/${SITE_NAME:-erpnext.localhost}/site_config.json
+# Check if we need to restore from dump
+if [ -f /home/frappe/frappe-bench/dump.sql ] && ! bench --site ${SITE_NAME:-erpnext.localhost} list-apps > /dev/null 2>&1; then
+    echo "Restoring from dump file..."
+    mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_USER:-ameen_site} -p${DB_PASSWORD:-admin123} ${DB_NAME:-ameen_site} < /home/frappe/frappe-bench/dump.sql
 fi
 
-# Check if site is installed (has tables)
-if ! bench --site ${SITE_NAME:-erpnext.localhost} list-apps > /dev/null 2>&1; then
-    echo "Site not ready (tables missing). Attempting setup..."
-    
-    if [ -f /home/frappe/frappe-bench/dump.sql ]; then
-         echo "Dump file found at /home/frappe/frappe-bench/dump.sql. Restoring..."
-         # Use mysql directly to avoid bench init issues on empty DB
-         mysql -h ${DB_HOST:-db} -P ${DB_PORT:-3306} -u ${DB_NAME:-ameen_site} -p${DB_PASSWORD:-admin123} ${DB_NAME:-ameen_site} < /home/frappe/frappe-bench/dump.sql
-    else
-         echo "No dump file found. Installing fresh site..."
-         bench --site ${SITE_NAME:-erpnext.localhost} reinstall --yes
-    fi
-else
-    echo "Site appears ready. Running migrate..."
-fi
-
-# Always migrate to ensure everything is in sync
+# Always migrate to ensure schema is up to date
+echo "Running migrations..."
 bench --site ${SITE_NAME:-erpnext.localhost} migrate
+
+# Install custom app if not already installed
+if ! bench --site ${SITE_NAME:-erpnext.localhost} list-apps | grep -q "ameen_app"; then
+    echo "Installing ameen_app..."
+    bench --site ${SITE_NAME:-erpnext.localhost} install-app ameen_app
+fi
 
 # Set default site
 bench use ${SITE_NAME:-erpnext.localhost}
 
-# Run bench serve
-bench serve --port 8000
+# Ensure proper permissions
+mkdir -p $SITE_PATH/locks
+mkdir -p $SITE_PATH/logs
+
+echo "Starting ERPNext..."
+exec bench serve --port 8000 --no-reload
