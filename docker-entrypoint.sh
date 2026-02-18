@@ -46,8 +46,21 @@ if [ -f /home/frappe/frappe-bench/dump.sql ]; then
         || echo "Dump restore failed or already restored, continuing..."
 fi
 
-# ─── Step 4: Fix user permissions AFTER dump restore ─────────────────────────
-# The dump may overwrite grants, so we re-apply them here
+# ─── Step 4: Write site_config.json with OUR password BEFORE granting ────────
+echo "Writing site_config.json with known password..."
+mkdir -p "${SITE_PATH}"
+cat > "${SITE_PATH}/site_config.json" << EOF
+{
+    "db_name": "${DB_NAME}",
+    "db_password": "${DB_PASSWORD}",
+    "db_host": "${DB_HOST}",
+    "db_port": ${DB_PORT},
+    "admin_password": "${ADMIN_PASSWORD}"
+}
+EOF
+echo "site_config.json written!"
+
+# ─── Step 5: Grant DB user with OUR known password ───────────────────────────
 echo "Fixing database user permissions..."
 mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" << SQL
 DROP USER IF EXISTS '${DB_NAME}'@'localhost';
@@ -56,9 +69,17 @@ CREATE USER '${DB_NAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
 GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_NAME}'@'%';
 FLUSH PRIVILEGES;
 SQL
-echo "Permissions fixed!"
+echo "Permissions fixed! DB user '${DB_NAME}' password set to '${DB_PASSWORD}'"
 
-# ─── Step 5: Create site if it doesn't exist ─────────────────────────────────
+# ─── Step 6: Verify connection works ─────────────────────────────────────────
+echo "Verifying DB connection as '${DB_NAME}' user..."
+until mysql -h "${DB_HOST}" -P "${DB_PORT}" -u "${DB_NAME}" -p"${DB_PASSWORD}" "${DB_NAME}" -e "SELECT 1;" > /dev/null 2>&1; do
+    echo "  Connection not ready yet, retrying in 2s..."
+    sleep 2
+done
+echo "DB connection verified successfully!"
+
+# ─── Step 7: Create site if it doesn't exist ─────────────────────────────────
 if [ ! -d "${SITE_PATH}" ]; then
     echo "Site directory not found. Creating site..."
     bench new-site "${SITE_NAME}" \
@@ -72,17 +93,17 @@ else
     echo "Site already exists at ${SITE_PATH}"
 fi
 
-# ─── Step 6: Run migrations ───────────────────────────────────────────────────
+# ─── Step 8: Run migrations ───────────────────────────────────────────────────
 echo "Running migrations..."
 bench --site "${SITE_NAME}" migrate || echo "Migration completed with warnings (non-fatal)"
 
-# ─── Step 7: Install custom app ──────────────────────────────────────────────
+# ─── Step 9: Install custom app ──────────────────────────────────────────────
 if ! bench --site "${SITE_NAME}" list-apps 2>/dev/null | grep -q "ameen_app"; then
     echo "Installing ameen_app..."
     bench --site "${SITE_NAME}" install-app ameen_app || echo "ameen_app install failed or already installed"
 fi
 
-# ─── Step 8: Final setup ──────────────────────────────────────────────────────
+# ─── Step 10: Final setup ─────────────────────────────────────────────────────
 bench use "${SITE_NAME}" || true
 mkdir -p "${SITE_PATH}/locks"
 mkdir -p "${SITE_PATH}/logs"
