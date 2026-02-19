@@ -18,14 +18,14 @@
    desc `tabClient Document`;
    select \* from `tabClient Document`;
 
+// Terminal Deployment Steps
 
-// Terminal Deployment Steps 
-   1. tar -xvzf erpnext-ameen-production-final.tar.gz : extract the files
-   2. docker compose --env-file .env.production -f docker-compose-production.yml up -d --build : build and run the containers
-   3. docker compose up -d
-   4. docker ps
-   5. docker compose logs -f
-   erpnext-ameen-production-fixed.tar.gz
+1.  tar -xvzf erpnext-ameen-production-final.tar.gz : extract the files
+2.  docker compose --env-file .env.production -f docker-compose-production.yml up -d --build : build and run the containers
+3.  docker compose up -d
+4.  docker ps
+5.  docker compose logs -f
+    erpnext-ameen-production-fixed.tar.gz
 
 In Server
 
@@ -48,3 +48,7 @@ docker build --platform linux/amd64 -t ameenarshad99/erp-next-demo:v1.0 .
 docker push ameenarshad99/erp-next-demo:v1.0
 
 mysql -h 165.232.191.67 -P 3307 -u root -pameen123 --ssl-mode=DISABLED -e "SHOW DATABASES;"
+
+//
+bench setup requirements --node
+ls -d apps/frappe/node_modules/socket.io

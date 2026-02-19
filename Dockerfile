@@ -14,14 +14,22 @@ COPY frappe-bench/Procfile ./
 COPY frappe-bench/patches.txt ./
 COPY frappe-bench/config/ ./config/
 
-# Fix ownership
+# Copy local apps (preserves your edits to frappe/erpnext/custom apps)
+COPY frappe-bench/apps ./apps
+
+# Fix ownership to frappe user
 RUN chown -R frappe:frappe /home/frappe/frappe-bench
 
-# Switch to frappe user
+# Switch to frappe user for build commands
 USER frappe
 
-# Install your custom app from GitHub
-RUN bench get-app --branch main https://github.com/ARSHADAMEEN00/frappe-first-custom-app.git
+# Install app dependencies (Must be run as frappe user)
+RUN bench setup requirements
+RUN pip install -e apps/ameen_app
+RUN bench build --app frappe
+
+# Switch back to root for final setup (if needed, though usually not)
+USER root
 
 # Switch back to root for final setup
 USER root

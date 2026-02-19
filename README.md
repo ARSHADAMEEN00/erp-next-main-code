@@ -17,9 +17,21 @@ brew install mariadb
 brew services start mariadb
 brew install redis && brew services start redis
 
+bench --site ameenSite backup && LATEST_BACKUP=$(ls -t sites/ameenSite/private/backups/*-database.sql.gz | head -n 1) && cp "$LATEST_BACKUP" ../latest_backup.sql.gz && gunzip -f ../latest_backup.sql.gz && mv ../latest_backup.sql ../ameen_site_ready_dump.sql
+
 ---
 
 ## 🚀 Quick Start
+
+# 1. Stop containers and remove old volumes (Clears old DB)
+
+docker-compose down -v
+
+# 2. Build and Start (This takes a few minutes)
+
+docker-compose up --build -d
+
+docker-compose logs -f backend
 
 ### Prerequisites
 

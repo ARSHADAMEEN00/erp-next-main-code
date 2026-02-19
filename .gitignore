@@ -1,0 +1,15 @@
+# Global ignores
+node_modules/
+*.DS_Store
+*.pyc
+__pycache__/
+*.log
+
+# Frappe specific
+frappe-bench/sites/
+frappe-bench/logs/
+frappe-bench/config/
+!frappe-bench/config/pids
+
+# Ignore node_modules in apps explicitly (though global rule covers it)
+frappe-bench/apps/*/node_modules/
