@@ -1,8 +1,8 @@
 {
     "db_name": "ameen_site",
     "db_password": "admin123",
-    "db_host": "165.232.191.67",
-    "db_port": 3307,
+    "db_host": "localhost",
+    "db_port": 3306,
     "db_type": "mariadb",
     "developer_mode": 1
 }

@@ -3,6 +3,7 @@
 ## 📦 What's Included
 
 This Docker setup includes:
+
 - **Frappe Framework** (core)
 - **ERPNext** (accounting & business features)
 - **ameen_app** (your custom app from GitHub)
@@ -12,6 +13,10 @@ This Docker setup includes:
 - **Background Workers** (for async tasks)
 - **Scheduler** (for cron jobs)
 
+brew install mariadb
+brew services start mariadb
+brew install redis && brew services start redis
+
 ---
 
 ## 🚀 Quick Start
@@ -19,10 +24,12 @@ This Docker setup includes:
 ### Prerequisites
 
 Make sure you have installed:
+
 - Docker (version 20.10+)
 - Docker Compose (version 2.0+)
 
 Check versions:
+
 ```bash
 docker --version
 docker-compose --version
@@ -53,13 +60,15 @@ docker-compose up -d
 ### Step 3: Wait for Initialization
 
 The first time you run this, it will:
+
 1. Create a new ERPNext site
 2. Install ERPNext app
 3. Install your ameen_app
 4. Set up the database
 
 This takes about 5-10 minutes. Monitor progress:
-```bash
+
+````bash
 ## 🚀 How to Use (For Server Admin)
 
 1.  **Extract the files:**
@@ -87,7 +96,7 @@ This takes about 5-10 minutes. Monitor progress:
 
 4.  **Access the site:**
     Open `http://<your-server-ip>` in your browser.
-    
+
     *   **Username:** Administrator
     *   **Password:** admin
 
@@ -119,7 +128,7 @@ lsof -i :8000
 # Remove and recreate
 docker-compose down -v
 docker-compose up -d
-```
+````
 
 ### Database connection errors
 
@@ -161,6 +170,7 @@ docker-compose up -d
 ### Option 1: Share Docker Setup Files
 
 Send your server admin these files:
+
 ```
 frappe-docker/
 ├── Dockerfile
@@ -171,6 +181,7 @@ frappe-docker/
 ```
 
 They just need to:
+
 ```bash
 # 1. Copy .env.example to .env and customize
 cp .env.example .env
@@ -193,9 +204,10 @@ docker push yourusername/erpnext-ameen:latest
 ```
 
 Then update docker-compose.yml:
+
 ```yaml
 backend:
-  image: yourusername/erpnext-ameen:latest  # Instead of build: .
+  image: yourusername/erpnext-ameen:latest # Instead of build: .
 ```
 
 ---
@@ -205,12 +217,14 @@ backend:
 ### Security
 
 1. **Change default passwords** in .env:
+
    ```env
    DB_ROOT_PASSWORD=your-strong-password-here
    ADMIN_PASSWORD=your-admin-password-here
    ```
 
 2. **Disable developer mode**:
+
    ```env
    DEVELOPER_MODE=0
    ```
@@ -222,12 +236,13 @@ backend:
 ### Performance
 
 1. **Increase resources** in docker-compose.yml:
+
    ```yaml
    backend:
      deploy:
        resources:
          limits:
-           cpus: '2'
+           cpus: "2"
            memory: 4G
    ```
 
@@ -270,10 +285,12 @@ docker system df
 ### Logs Location
 
 Inside containers:
+
 - Backend logs: `/home/frappe/frappe-bench/logs/`
 - Database logs: Check with `docker-compose logs db`
 
 On host (persisted):
+
 ```bash
 # View volume location
 docker volume inspect frappe-docker_logs_data
@@ -281,26 +298,26 @@ docker volume inspect frappe-docker_logs_data
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Port 80 already in use | Change port in docker-compose.yml: `"8080:80"` |
-| Out of memory | Increase Docker memory limit in Docker Desktop |
-| Slow performance | Allocate more CPU/RAM to Docker |
-| Can't access from network | Change `SITE_NAME` to your server IP/domain |
+| Issue                     | Solution                                       |
+| ------------------------- | ---------------------------------------------- |
+| Port 80 already in use    | Change port in docker-compose.yml: `"8080:80"` |
+| Out of memory             | Increase Docker memory limit in Docker Desktop |
+| Slow performance          | Allocate more CPU/RAM to Docker                |
+| Can't access from network | Change `SITE_NAME` to your server IP/domain    |
 
 ---
 
 ## 📝 Environment Variables Reference
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_ROOT_PASSWORD` | admin123 | MariaDB root password |
-| `DB_NAME` | erpnext | Database name |
-| `DB_USER` | erpnext | Database user |
-| `DB_PASSWORD` | erpnext123 | Database password |
-| `SITE_NAME` | erpnext.localhost | Site domain name |
-| `ADMIN_PASSWORD` | admin | ERPNext admin password |
-| `DEVELOPER_MODE` | 1 | Enable developer mode (0 or 1) |
+| Variable           | Default           | Description                    |
+| ------------------ | ----------------- | ------------------------------ |
+| `DB_ROOT_PASSWORD` | admin123          | MariaDB root password          |
+| `DB_NAME`          | erpnext           | Database name                  |
+| `DB_USER`          | erpnext           | Database user                  |
+| `DB_PASSWORD`      | erpnext123        | Database password              |
+| `SITE_NAME`        | erpnext.localhost | Site domain name               |
+| `ADMIN_PASSWORD`   | admin             | ERPNext admin password         |
+| `DEVELOPER_MODE`   | 1                 | Enable developer mode (0 or 1) |
 
 ---
 

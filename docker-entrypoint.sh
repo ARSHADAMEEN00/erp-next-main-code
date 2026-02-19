@@ -60,6 +60,14 @@ cat > "${SITE_PATH}/site_config.json" << EOF
 EOF
 echo "site_config.json written!"
 
+# ─── Step 4b: Create required site directories early ─────────────────────────
+echo "Creating site directories..."
+mkdir -p "${SITE_PATH}/logs"
+mkdir -p "${SITE_PATH}/locks"
+mkdir -p "${SITE_PATH}/public"
+touch "${SITE_PATH}/logs/database.log"
+echo "Site directories ready!"
+
 # ─── Step 5: Grant DB user with OUR known password ───────────────────────────
 echo "Fixing database user permissions..."
 mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" << SQL
@@ -107,6 +115,7 @@ fi
 bench use "${SITE_NAME}" || true
 mkdir -p "${SITE_PATH}/locks"
 mkdir -p "${SITE_PATH}/logs"
+mkdir -p "${SITE_PATH}/public"
 
 echo "Starting ERPNext server..."
 exec bench serve --port 8000 --noreload

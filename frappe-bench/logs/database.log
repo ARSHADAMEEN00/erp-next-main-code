@@ -2091,3 +2091,9 @@ ALTER TABLE `tabServices Registration` ADD COLUMN `photo` text, ADD COLUMN `serv
 ALTER TABLE `tabServices Registration` ADD COLUMN `full_name` varchar(140)
 2026-02-11 10:58:30,714 WARNING database DDL Query made to DB:
 ALTER TABLE `tabServices Registration` MODIFY `services_needed` int(1) not null default 0
+2026-02-19 11:46:34,980 WARNING database DDL Query made to DB:
+alter table `tabDocType` add column if not exists migration_hash varchar(140)
+2026-02-19 11:46:35,494 WARNING database DDL Query made to DB:
+ALTER TABLE `tabPrint Heading` DROP INDEX `print_heading`
+2026-02-19 11:46:35,900 WARNING database DDL Query made to DB:
+ALTER TABLE `tabPrint Heading` ADD UNIQUE INDEX IF NOT EXISTS print_heading (`print_heading`)
