@@ -52,3 +52,12 @@ mysql -h 165.232.191.67 -P 3307 -u root -pameen123 --ssl-mode=DISABLED -e "SHOW 
 //
 bench setup requirements --node
 ls -d apps/frappe/node_modules/socket.io
+
+db
+docker exec erpnext_db mysql -u root -padmin123 -e "CREATE DATABASE ameen_site CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+cat ameen_site_ready_dump.sql | docker exec -i erpnext_db mysql -u root -padmin123 ameen_site
+
+docker exec erpnext_db mysql -u root -padmin123 -e "CREATE USER IF NOT EXISTS 'ameen_site'@'%' IDENTIFIED BY 'admin123'; GRANT ALL PRIVILEGES ON ameen_site.\* TO 'ameen_site'@'%'; FLUSH PRIVILEGES;"
+
+docker restart erpnext_backend

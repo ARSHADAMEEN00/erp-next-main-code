@@ -3,13 +3,13 @@ set -e
 
 echo "Starting ERPNext with fixed configuration..."
 
-SITE_NAME="${SITE_NAME:-erpnext.localhost}"
+SITE_NAME="${SITE_NAME:-focusmotors.localhost}"
 DB_HOST="${DB_HOST:-db}"
 DB_PORT="${DB_PORT:-3306}"
-DB_NAME="${DB_NAME:-ameen_site}"
-DB_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-admin123}"
-DB_PASSWORD="${DB_PASSWORD:-admin123}"
-ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin}"
+DB_NAME="${DB_NAME:-focusmotors_prod}"
+DB_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-Fr@ppe$Root#2024!}"
+DB_PASSWORD="${DB_PASSWORD:-Fm@Secure#2024!}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-Fm@Admin#2024!}"
 SITE_PATH="/home/frappe/frappe-bench/sites/${SITE_NAME}"
 
 # ─── Step 1: Wait for MariaDB ────────────────────────────────────────────────
@@ -39,7 +39,7 @@ mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" -e \
     "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 if [ -f /home/frappe/frappe-bench/dump.sql ]; then
-    echo "Restoring database from dump file (ameen_site_ready_dump.sql)..."
+    echo "Restoring database from dump file (dump.sql)..."
     mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" "${DB_NAME}" \
         < /home/frappe/frappe-bench/dump.sql \
         && echo "Database restored successfully!" \
@@ -71,17 +71,17 @@ echo "Site directories ready!"
 # ─── Step 5: Grant DB user with OUR known password ───────────────────────────
 echo "Fixing database user permissions..."
 mysql -h "${DB_HOST}" -P "${DB_PORT}" -u root -p"${DB_ROOT_PASSWORD}" << SQL
-DROP USER IF EXISTS '${DB_NAME}'@'localhost';
-DROP USER IF EXISTS '${DB_NAME}'@'%';
-CREATE USER '${DB_NAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
-GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_NAME}'@'%';
+DROP USER IF EXISTS 'fm_dbuser'@'localhost';
+DROP USER IF EXISTS 'fm_dbuser'@'%';
+CREATE USER 'fm_dbuser'@'%' IDENTIFIED BY '${DB_PASSWORD}';
+GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO 'fm_dbuser'@'%';
 FLUSH PRIVILEGES;
 SQL
-echo "Permissions fixed! DB user '${DB_NAME}' password set to '${DB_PASSWORD}'"
+echo "Permissions fixed! DB user 'fm_dbuser' password set to '${DB_PASSWORD}'"
 
 # ─── Step 6: Verify connection works ─────────────────────────────────────────
 echo "Verifying DB connection as '${DB_NAME}' user..."
-until mysql -h "${DB_HOST}" -P "${DB_PORT}" -u "${DB_NAME}" -p"${DB_PASSWORD}" "${DB_NAME}" -e "SELECT 1;" > /dev/null 2>&1; do
+until mysql -h "${DB_HOST}" -P "${DB_PORT}" -u "fm_dbuser" -p"${DB_PASSWORD}" "${DB_NAME}" -e "SELECT 1;" > /dev/null 2>&1; do
     echo "  Connection not ready yet, retrying in 2s..."
     sleep 2
 done
@@ -106,9 +106,9 @@ echo "Running migrations..."
 bench --site "${SITE_NAME}" migrate || echo "Migration completed with warnings (non-fatal)"
 
 # ─── Step 9: Install custom app ──────────────────────────────────────────────
-if ! bench --site "${SITE_NAME}" list-apps 2>/dev/null | grep -q "ameen_app"; then
-    echo "Installing ameen_app..."
-    bench --site "${SITE_NAME}" install-app ameen_app || echo "ameen_app install failed or already installed"
+if ! bench --site "${SITE_NAME}" list-apps 2>/dev/null | grep -q "focusmotors"; then
+    echo "Installing focusmotors app..."
+    bench --site "${SITE_NAME}" install-app focusmotors || echo "focusmotors app install failed or already installed"
 fi
 
 # ─── Step 10: Final setup ─────────────────────────────────────────────────────

@@ -6,18 +6,17 @@ services:
     restart: unless-stopped
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --skip-character-set-client-handshake --innodb-file-per-table --innodb-large-prefix --transaction-isolation=READ-COMMITTED
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin123}
-      MYSQL_DATABASE: ${DB_NAME:-ameen_site}
-      MYSQL_USER: ${DB_USER:-ameen_site}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-admin123}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Fr@ppe$Root#2024!}
+      MYSQL_DATABASE: ${DB_NAME:-focusmotors_prod}
+      MYSQL_USER: ${DB_USER:-fm_dbuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-Fm@Secure#2024!}
     volumes:
       - db_data:/var/lib/mysql
     networks:
       - erpnext_network
-    ports:
-      - "3306:3306"
+    # Port 3306 NOT exposed publicly - DB only accessible within Docker network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin123"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pFr@ppe$Root#2024!"]
       interval: 5s
       timeout: 10s
       retries: 20
@@ -67,18 +66,18 @@ services:
       # Database Configuration
       DB_HOST: db
       DB_PORT: 3306
-      DB_NAME: ${DB_NAME:-ameen_site}
-      DB_USER: ${DB_USER:-ameen_site}
-      DB_PASSWORD: ${DB_PASSWORD:-admin123}
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-admin123}
+      DB_NAME: ${DB_NAME:-focusmotors_prod}
+      DB_USER: ${DB_USER:-fm_dbuser}
+      DB_PASSWORD: ${DB_PASSWORD:-Fm@Secure#2024!}
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Fr@ppe$Root#2024!}
 
       # Redis Configuration
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
 
       # Site Configuration
-      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      SITE_NAME: ${SITE_NAME:-focusmotors.localhost}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Fm@Admin#2024!}
 
       # Production Mode
       DEVELOPER_MODE: 0
@@ -86,7 +85,6 @@ services:
     volumes:
       - sites_data:/home/frappe/frappe-bench/sites
       - logs_data:/home/frappe/frappe-bench/logs
-      - ./ameen_site_ready_dump.sql:/home/frappe/frappe-bench/dump.sql:ro
       - ./docker-entrypoint.sh:/docker-entrypoint.sh:ro
     entrypoint: ["/bin/bash", "/docker-entrypoint.sh"]
     networks:
@@ -128,11 +126,11 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_USER: ${DB_USER:-ameen_site}
-      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      DB_USER: ${DB_USER:-fm_dbuser}
+      DB_PASSWORD: ${DB_PASSWORD:-Fm@Secure#2024!}
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
-      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+      SITE_NAME: ${SITE_NAME:-focusmotors.localhost}
     volumes:
       - sites_data:/home/frappe/frappe-bench/sites
       - logs_data:/home/frappe/frappe-bench/logs
@@ -153,11 +151,11 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_USER: ${DB_USER:-ameen_site}
-      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      DB_USER: ${DB_USER:-fm_dbuser}
+      DB_PASSWORD: ${DB_PASSWORD:-Fm@Secure#2024!}
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
-      SITE_NAME: ${SITE_NAME:-erpnext.localhost}
+      SITE_NAME: ${SITE_NAME:-focusmotors.localhost}
     volumes:
       - sites_data:/home/frappe/frappe-bench/sites
       - logs_data:/home/frappe/frappe-bench/logs
