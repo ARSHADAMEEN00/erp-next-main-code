@@ -61,3 +61,58 @@ cat ameen_site_ready_dump.sql | docker exec -i erpnext_db mysql -u root -padmin1
 docker exec erpnext_db mysql -u root -padmin123 -e "CREATE USER IF NOT EXISTS 'ameen_site'@'%' IDENTIFIED BY 'admin123'; GRANT ALL PRIVILEGES ON ameen_site.\* TO 'ameen_site'@'%'; FLUSH PRIVILEGES;"
 
 docker restart erpnext_backend
+
+## ////////////////////////////////////////
+
+docker compose down
+docker volume rm erpnext-production_db_data erpnext-production_sites_data
+docker compose up -d --build
+
+docker exec erpnext_backend bench build
+docker exec erpnext_backend bench --site osperb.localhost install-app erpnext
+
+docker restart erpnext_backend erpnext_worker erpnext_scheduler
+
+db
+cd /usr/local/share/applications/erpnext-production
+docker cp ameen_site_ready_dump.sql erpnext_backend:/home/frappe/frappe-bench/dump.sql
+
+docker exec erpnext_backend bench --site osperb.localhost restore /home/frappe/frappe-bench/dump.sql \
+ --db-root-username root \
+ --db-root-password "OspErp@Root2017!"
+
+docker exec erpnext_backend bench --site osperb.localhost migrate
+docker restart erpnext_backend erpnext_worker erpnext_scheduler
+
+docker exec erpnext_db mysqldump -u root -p"OspErp@Root2017!" osperb_erp > /usr/local/share/applications/erpnext-production/ameen_site_ready_dump.sql
+
+create new user
+docker exec -i erpnext_backend bench --site osperb.localhost console << 'EOF'
+import frappe
+from frappe.utils.password import update_password
+
+email = "accountant@osperb.com"
+password = "AccountingManager2026!"
+
+# Check if user exists, if not, create them
+
+if not frappe.db.exists("User", email):
+user = frappe.new_doc("User")
+user.email = email
+user.first_name = "Accounting"
+user.last_name = "Manager"
+user.send_welcome_email = 0
+user.insert(ignore_permissions=True) # Assign the standard ERPNext 'Accounts Manager' role
+user.add_roles("Accounts Manager", "Accounts User")
+print("\n✅ User created successfully!")
+else:
+print("\n✅ User already exists!")
+
+# Set the password securely
+
+update_password(user=email, pwd=password)
+frappe.db.commit()
+print("✅ Password updated successfully! They can now log in.\n")
+EOF
+
+disable firewall

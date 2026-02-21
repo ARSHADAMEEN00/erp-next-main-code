@@ -1,0 +1,87 @@
+docker stop erpnext_nginx
+
+Step 2 — Generate the Certificate
+
+docker run -it --rm \
+  -p 80:80 \
+  -v "$(pwd)/certbot/conf:/etc/letsencrypt" \
+  -v "$(pwd)/certbot/www:/var/www/certbot" \
+  certbot/certbot certonly \
+  --standalone \
+  --agree-tos \
+  --no-eff-email \
+  -m accountant@osperb.com \
+  -d testerp.osperb.com
+
+
+// Step 3 — Write the HTTPS Config
+
+cat > nginx.conf << 'EOF'
+upstream backend {
+    server backend:8000;
+}
+
+server {
+    listen 80;
+    server_name testerp.osperb.com;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name testerp.osperb.com;
+
+    ssl_certificate /etc/letsencrypt/live/testerp.osperb.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/testerp.osperb.com/privkey.pem;
+
+    client_max_body_size 50M;
+
+    location / {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        proxy_connect_timeout 600s;
+        proxy_send_timeout 600s;
+        proxy_read_timeout 600s;
+    }
+
+    location /assets {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location /files {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+    }
+}
+EOF
+
+
+Step 4 — Link the Certificates to NGINX (Do this on your Mac)
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - sites_data:/home/frappe/frappe-bench/sites:ro
+      - ./certbot/conf:/etc/letsencrypt:ro        # ADD THIS
+      - ./certbot/www:/var/www/certbot:ro         # ADD THIS
+
+
+Step 5 — Restart with SSL!
+
+docker compose up -d
