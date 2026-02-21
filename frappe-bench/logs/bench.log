@@ -209,3 +209,60 @@
 2026-02-20 12:00:01,044 INFO /opt/homebrew/bin/bench --verbose --site all backup
 2026-02-20 18:00:00,867 INFO /opt/homebrew/bin/bench --verbose --site all backup
 2026-02-21 12:00:01,622 INFO /opt/homebrew/bin/bench --verbose --site all backup
+2026-02-21 12:33:24,085 INFO /opt/homebrew/bin/bench get-app https://github.com/dhwani-ris/frappe_desk_theme
+2026-02-21 12:33:24,095 LOG Getting frappe_desk_theme
+2026-02-21 12:33:24,095 DEBUG cd ./apps && git clone https://github.com/dhwani-ris/frappe_desk_theme  --depth 1 --origin upstream
+2026-02-21 12:33:25,452 LOG Installing frappe_desk_theme
+2026-02-21 12:33:25,452 DEBUG cd /Users/ameenarshad/Projects/Frappe-demo/frappe-bench && uv pip install --quiet --upgrade -e /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/apps/frappe_desk_theme  --python /Users/ameenarshad/Projects/Frappe-demo/frappe-bench/env/bin/python
+2026-02-21 12:33:26,972 DEBUG bench build --app frappe_desk_theme
+2026-02-21 12:33:27,043 INFO /opt/homebrew/bin/bench build --app frappe_desk_theme
+2026-02-21 12:34:03,950 INFO /opt/homebrew/bin/bench --site ameenSite install-app frappe_desk_theme
+2026-02-21 12:34:16,797 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 12:34:28,804 INFO /opt/homebrew/bin/bench build --app frappe_desk_theme
+2026-02-21 12:35:47,157 INFO /opt/homebrew/bin/bench --site ameenSite execute setup_demo_theme.execute
+2026-02-21 12:36:25,359 INFO /opt/homebrew/bin/bench start
+2026-02-21 12:36:25,566 INFO /opt/homebrew/bin/bench schedule
+2026-02-21 12:36:25,569 INFO /opt/homebrew/bin/bench watch
+2026-02-21 12:36:25,573 INFO /opt/homebrew/bin/bench worker
+2026-02-21 12:36:25,576 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-21 12:36:31,695 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.setup_demo_theme.execute
+2026-02-21 13:21:35,690 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.print_theme.execute
+2026-02-21 13:28:04,428 INFO /opt/homebrew/bin/bench build --app frappe_desk_theme
+2026-02-21 13:28:32,968 INFO /opt/homebrew/bin/bench build --app frappe_desk_theme
+2026-02-21 13:29:22,776 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 13:34:43,031 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.reset_theme.execute
+2026-02-21 13:35:31,621 INFO /opt/homebrew/bin/bench build
+2026-02-21 13:35:40,053 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 13:35:40,629 INFO /opt/homebrew/bin/bench clear-website-cache
+2026-02-21 13:35:47,319 INFO /opt/homebrew/bin/bench start
+2026-02-21 13:35:47,515 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-21 13:35:47,526 INFO /opt/homebrew/bin/bench schedule
+2026-02-21 13:35:47,527 INFO /opt/homebrew/bin/bench worker
+2026-02-21 13:35:47,527 INFO /opt/homebrew/bin/bench watch
+2026-02-21 14:00:19,584 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.setup_osperb_page.execute
+2026-02-21 14:00:34,537 INFO /opt/homebrew/bin/bench build --app ameen_app
+2026-02-21 14:00:48,216 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 14:02:59,322 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.setup_osperb_page.execute
+2026-02-21 14:04:57,831 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.setup_osperb_page_fixed.execute
+2026-02-21 14:37:56,323 INFO /opt/homebrew/bin/bench --site ameenSite restore /Users/ameenarshad/Projects/Frappe-demo/latest_dump.sql
+2026-02-21 14:41:02,297 INFO /opt/homebrew/bin/bench --site ameenSite restore /Users/ameenarshad/Projects/Frappe-demo/latest_dump.sql
+2026-02-21 14:41:10,619 INFO /opt/homebrew/bin/bench --site ameenSite restore /Users/ameenarshad/Projects/Frappe-demo/latest_dump.sql
+2026-02-21 14:41:18,046 INFO /opt/homebrew/bin/bench --site ameenSite restore /Users/ameenarshad/Projects/Frappe-demo/latest_dump.sql
+2026-02-21 14:41:30,228 INFO /opt/homebrew/bin/bench --site ameenSite restore /Users/ameenarshad/Projects/Frappe-demo/latest_dump.sql
+2026-02-21 14:45:20,121 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-21 14:52:46,157 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 14:53:44,167 INFO /opt/homebrew/bin/bench --site ameenSite execute ameen_app.update_page_content.execute
+2026-02-21 14:55:24,638 INFO /opt/homebrew/bin/bench build --app ameen_app
+2026-02-21 14:55:27,124 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 14:56:35,836 INFO /opt/homebrew/bin/bench build --app ameen_app
+2026-02-21 14:56:37,425 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 14:57:06,667 INFO /opt/homebrew/bin/bench start
+2026-02-21 14:57:06,878 INFO /opt/homebrew/bin/bench serve --port 8000
+2026-02-21 14:57:06,885 INFO /opt/homebrew/bin/bench worker
+2026-02-21 14:57:06,893 INFO /opt/homebrew/bin/bench watch
+2026-02-21 14:57:06,898 INFO /opt/homebrew/bin/bench schedule
+2026-02-21 14:58:51,909 INFO /opt/homebrew/bin/bench build --app ameen_app
+2026-02-21 14:58:53,469 INFO /opt/homebrew/bin/bench clear-cache
+2026-02-21 14:59:12,296 INFO /opt/homebrew/bin/bench --site ameenSite clear-cache
+2026-02-21 14:59:36,401 INFO /opt/homebrew/bin/bench --site ameenSite migrate
+2026-02-21 14:59:52,410 INFO /opt/homebrew/bin/bench --site ameenSite clear-cache

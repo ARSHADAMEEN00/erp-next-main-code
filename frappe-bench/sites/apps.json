@@ -27,5 +27,15 @@
         "required": [],
         "idx": 3,
         "version": "0.0.1"
+    },
+    "frappe_desk_theme": {
+        "is_repo": true,
+        "resolution": {
+            "commit_hash": "c376f2bd92ea06ac3149f4c85c87c4d5449c3bcc",
+            "branch": "main"
+        },
+        "required": [],
+        "idx": 4,
+        "version": "1.1.0"
     }
 }

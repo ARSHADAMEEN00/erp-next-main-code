@@ -1,3 +1,4 @@
 frappe
 ameen_app
 erpnext
+frappe_desk_theme

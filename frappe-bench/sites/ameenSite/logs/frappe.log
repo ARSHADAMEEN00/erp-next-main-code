@@ -13,3 +13,6 @@ Form Dict: {'doc': '{"docstatus":0,"doctype":"Client Document","name":"new-clien
 2026-02-11 11:47:36,810 ERROR frappe New Exception collected in error log
 Site: ameenSite
 Form Dict: {'doctype': 'Services Registration', 'with_parent': '1', 'cached_timestamp': '2026-02-11 10:58:30.595343', 'cmd': 'frappe.desk.form.load.getdoctype'}
+2026-02-21 14:02:05,831 ERROR frappe New Exception collected in error log
+Site: ameenSite
+Form Dict: {'name': 'osperb-demo', 'cmd': 'frappe.desk.desk_page.getpage'}
