@@ -68,6 +68,7 @@ docker compose down
 docker volume rm erpnext-production_db_data erpnext-production_sites_data
 docker compose up -d --build
 
+// css
 docker exec erpnext_backend bench build
 docker exec erpnext_backend bench --site osperb.localhost install-app erpnext
 

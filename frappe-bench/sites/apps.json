@@ -21,8 +21,8 @@
     "ameen_app": {
         "is_repo": true,
         "resolution": {
-            "commit_hash": "751ef2b7c457a3fc13de25647b606a4423bbba5c",
-            "branch": "develop"
+            "commit_hash": "b97462a5ac2d3f57873d3925ce93107ba7d0f2a8",
+            "branch": "main"
         },
         "required": [],
         "idx": 3,

@@ -6,19 +6,19 @@ def execute():
         html_content = f.read()
 
     js_code = f"""
-frappe.pages['osperb-demo'].on_page_load = function (wrapper) {{
+frappe.pages['osperb-demo'].on_page_load = function(wrapper) {{
 	var page = frappe.ui.make_app_page({{
 		parent: wrapper,
 		title: 'Osperb Demo',
 		single_column: true
 	}});
 
-	// Inject custom HTML layout directly
-	$(page.main).html({json.dumps(html_content)});
-
-	// Hide Frappe standard title bar for full immersion
+	// Clean out any existing stuff and drop HTML directly inside wrapper
+	$(wrapper).find('.layout-main-section').html({json.dumps(html_content)});
+	
+	// Hide page head just in case
 	setTimeout(() => {{
-	    wrapper.find('.page-head').hide();
+		$(wrapper).find('.page-head').hide();
 	}}, 100);
 }}
 """
